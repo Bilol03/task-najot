@@ -1,34 +1,34 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { StudentService } from './student.service';
-import { CreateStudentDto } from './dto/create-student.dto';
-import { UpdateStudentDto } from './dto/update-student.dto';
+// === student/student.controller.ts ===
+import { Controller, Post, Body, Param, Get, UseGuards } from '@nestjs/common';
+import { StudentService } from 'src/student/student.service';
+import { RegisterStudentDto } from 'src/student/dto/create-student.dto';
+import { JwtAuthGuard } from '../auth/guard/jwt.guard';
+import { CurrentUser } from '../decorators/current-user.decorator';
+import { UserInterface } from '../interfaces/user.interface';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { FindStudentDto } from './dto/find-student.dto';
 
-@Controller('student')
+@ApiBearerAuth('access-token')
+@Controller('students')
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
-  @Post()
-  create(@Body() createStudentDto: CreateStudentDto) {
-    return this.studentService.create(createStudentDto);
+  @Post('register')
+  register(@Body() dto: RegisterStudentDto) {
+    return this.studentService.registerStudent(dto);
   }
 
-  @Get()
-  findAll() {
-    return this.studentService.findAll();
+  @Post('courses/:courseId/register')
+  @UseGuards(JwtAuthGuard)
+  registerToCourse(
+    @Param('courseId') courseId: string,
+    studentDto: FindStudentDto
+  ) {
+    return this.studentService.registerToCourse(studentDto, courseId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.studentService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
-    return this.studentService.update(+id, updateStudentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.studentService.remove(+id);
+  @Get(':id/courses')
+  getCourses(@Param('id') id: string) {
+    return this.studentService.getStudentCourses(id);
   }
 }

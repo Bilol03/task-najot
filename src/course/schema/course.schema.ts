@@ -1,17 +1,25 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Types } from 'mongoose';
 
-@Schema()
-export class Course {
-  // Course title string and required
+export type CourseDocument = Course & Document;
+
+@Schema({ timestamps: true })
+export class Course extends Document {
   @Prop({ required: true })
   title: string;
-  // Course description string and optional
+
   @Prop()
   description: string;
-  // Course starting date Date and optional
+
   @Prop()
   startDate: Date;
-  //  Course ending date Date and optional
+
   @Prop()
   endDate: Date;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Student' }], default: [] })
+  students: Types.ObjectId[];
 }
+
+export const CourseSchema = SchemaFactory.createForClass(Course);
+

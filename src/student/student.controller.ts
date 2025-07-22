@@ -6,7 +6,8 @@ import { JwtAuthGuard } from '../auth/guard/jwt.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { UserInterface } from '../interfaces/user.interface';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { FindStudentDto } from './dto/find-student.dto';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/decorators/role.decorator';
 
 @ApiBearerAuth('access-token')
 @Controller('students')
@@ -20,11 +21,13 @@ export class StudentController {
 
   @Post('courses/:courseId/register')
   @UseGuards(JwtAuthGuard)
+  @Roles('student')
   registerToCourse(
     @Param('courseId') courseId: string,
-    studentDto: FindStudentDto
+    @CurrentUser() user: UserInterface,
   ) {
-    return this.studentService.registerToCourse(studentDto, courseId);
+  
+    return this.studentService.registerToCourse(user, courseId);
   }
 
   @Get(':id/courses')

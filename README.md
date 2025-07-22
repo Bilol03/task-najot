@@ -28,14 +28,14 @@ A simple NestJS API for managing users, students, and courses with secure JWT au
 
 ```bash
 # Clone the project
-git clone https://github.com/your-name/task-course-api.git
-cd task-course-api
+git clone https://github.com/Bilol03/task-najot.git
+cd task-najot
 
 # Install dependencies
 npm install
 
 # Create `.env` file
-cp .env.example .env
+cp example.env .env
 
 # Start development server
 npm run start:dev

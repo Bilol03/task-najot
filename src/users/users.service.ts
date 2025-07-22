@@ -12,7 +12,7 @@ export class UsersService {
   
   async create(data: Partial<User>) {
     if(!data.password) throw new BadRequestException(400, "Password is required")
-    const hashed = bcrypt.hash(data.password, 10);
+    const hashed = await bcrypt.hash(data.password, 10);
     const createdUser = new this.userModel({
       ...data,
       password: hashed,
@@ -32,7 +32,4 @@ export class UsersService {
     return bcrypt.compare(plain, hash);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
 }

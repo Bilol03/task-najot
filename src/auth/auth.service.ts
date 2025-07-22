@@ -1,26 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { UpdateAuthDto } from './dto/login-auth.dto';
-import { CreateAuthDto } from './dto/register-auth.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { LoginDto } from './dto/login-auth.dto';
+import { RegisterDto } from './dto/register-auth.dto';
+import { UsersService } from 'src/users/users.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(
+    private readonly userService: UsersService,
+    private readonly jwtService: JwtService
+  ) {}
+  async register(registerDto: RegisterDto) {
+    const user = await this.userService.findByEmail(registerDto.email);
+    if (user) throw new UnauthorizedException('User already exists');
 
-  findAll() {
-    return `This action returns all auth`;
+    const newUser = await this.userService.create(registerDto);
+    return {message: "Successfully registered", newUser}
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
-  }
+  login(loginDto: LoginDto) {}
 }
